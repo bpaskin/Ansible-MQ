@@ -1,0 +1,15 @@
+      - name: Check OS
+        fail:
+           msg: This playbook only runs on AIX, found {{ os_family }}
+        when: ansible_system != "AIX"
+
+      - name: check if MQ may be installed
+        stat:
+          path: /usr/mqm/bin/dspmqver
+        register: MQDSPVER
+
+      - include_tasks: stop_qmgrs.yaml
+        when: MQDSPVER.stat.exists == true
+
+      - name: Gather software products / filesets to uninstall
+        shell: installp -u $(lslpp -ha | grep mqm)

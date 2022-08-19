@@ -1,0 +1,15 @@
+   - name: set MQ Directory
+     set_fact:
+        MQ_DIR: "{{ (ansible_system == 'AIX') | ternary ('/usr/mqm/bin', '/opt/mqm/bin') }}"
+
+   - name: Get List of running QMGRs
+     shell: /{{ MQ_DIR }}/dspmq | grep -vi Ended | awk '{print $1}' | sed 's/.*(\(.*\))/\1/'
+     become: yes
+     become_user: mqm
+     register: QMGRS
+
+   - name: Stop QMGRS
+     shell: /{{ MQ_DIR }}/endmqm -i {{ item }}
+     become: yes
+     become_user: mqm
+     with_items: "{{ QMGRS.stdout_lines }}"

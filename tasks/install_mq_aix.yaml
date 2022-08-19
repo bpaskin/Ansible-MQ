@@ -1,0 +1,35 @@
+      - name: Check OS
+        fail:
+           msg: This playbook only runs on AIX, found {{ os_family }}
+        when: ansible_system != "AIX"
+
+      - name: Check if file exists
+        stat:
+          path: /tmp/{{ MQ_FILE_NAME }}
+        register: MQFile
+
+      - name: fail when MQ Files does not exist
+        fail:
+          msg: Missing MQ Archive - {{ MQ_FILE_NAME }}
+        when: MQFile.stat.exists == false
+
+      - name: Decompress MQ
+        shell: uncompress /tmp/{{ MQ_FILE_NAME }}
+        when: '".Z" in MQ_FILE_NAME'
+
+# Note: Cannot use unarchive command since this requires GNU tar
+# which may not be on the classpath
+      - name: Unarchive MQ
+        shell: tar -xvf /tmp/{{ MQ_FILE_NAME.split('.Z') | first }} -C /tmp
+        when: '".tar" in MQ_FILE_NAME'
+
+      - name: check if MQ may be installed
+        stat:
+          path: /usr/mqm/bin/dspmqver
+        register: MQDSPVER
+
+      - include_tasks: stop_qmgrs.yaml
+        when: MQDSPVER.stat.exists == true
+
+      - name: Install
+        shell: installp -acgXYd /tmp/MQServer all

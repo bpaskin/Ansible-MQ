@@ -1,0 +1,9 @@
+ - name: Install MQ
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+
+   tasks:
+
+      - include_tasks: ../tasks/install_mq_aix.yaml
+        when: ansible_system == "AIX"
