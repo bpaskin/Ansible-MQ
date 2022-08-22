@@ -1,0 +1,44 @@
+      - name: Run the MQ Config script
+        shell: /{{ MQ_DIR }}/bin/mqconfig | grep FAIL | wc -l
+        become: yes
+        become_user: mqm
+        register: MQCONFIG
+        failed_when: MQCONFIG.stdout | int > 0
+
+      - name: Create a temp QMGR
+        shell: /{{ MQ_DIR }}/bin/crtmqm QMA
+        become: yes
+        become_user: mqm
+
+      - name: Start temp QMGR
+        shell: /{{ MQ_DIR }}/bin/strmqm QMA
+        become: yes
+        become_user: mqm
+
+      - name: Add a Queue
+        shell: echo "DEFINE QLOCAL (QUEUE1)" | {{ MQ_DIR }}/bin/runmqsc QMA
+        become: yes
+        become_user: mqm
+     
+      - name: add message to Queue
+        shell: echo "testing 123" | {{ MQ_DIR }}/samp/bin/amqsput QUEUE1 QMA 
+        become: yes
+        become_user: mqm
+     
+      - name: get messages from Queue
+        shell: /{{ MQ_DIR }}/samp/bin/amqsget QUEUE1 QMA  | grep "testing 123" | wc -l
+        become: yes
+        become_user: mqm
+        register: AMQSGET
+        failed_when: AMQSGET.stdout | int != 1
+
+      - name: Stop QMGR
+        shell: /{{ MQ_DIR }}/bin/endmqm -i QMA
+        become: yes
+        become_user: mqm
+
+      - name: Delete QMGR
+        shell: /{{ MQ_DIR }}/bin/dltmqm QMA
+        become: yes
+        become_user: mqm
+

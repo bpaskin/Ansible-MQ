@@ -1,0 +1,12 @@
+ - name: Check the MQ Configuration
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+
+   tasks:
+
+   - name: set MQ Directory
+     set_fact:
+        MQ_DIR: "{{ (ansible_system == 'AIX') | ternary ('/usr/mqm', '/opt/mqm') }}"
+
+   - include_tasks: ../tasks/check_config_mq.yaml
