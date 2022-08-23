@@ -16,6 +16,6 @@
    - name: backup QMGR
      archive:
         path: /var/mqm/qmgrs/{{ QMGR_NAME }}
-        dest: /tmp/backups/{{ QMGR_NAME }}.{{ lookup('pipe', 'date +%Y%m%d%H%M') }}.tgz
+        dest: /tmp/backups/{{ QMGR_NAME }}.{{ FILE_DATE }}.tgz
 
    - include_tasks: start_single_qmgr.yaml

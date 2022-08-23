@@ -23,6 +23,6 @@
      when: QMGRS.stdout_lines | length > 0
 
    - name: backup QMGR Configuration
-     shell: /{{ MQ_DIR }}/bin/dmpmqcfg -m {{ QMGR_NAME }} -a > /tmp/backups/{{ QMGR_NAME }}.{{ lookup('pipe', 'date +%Y%m%d%H%M') }}.mqsc
+     shell: /{{ MQ_DIR }}/bin/dmpmqcfg -m {{ QMGR_NAME }} -a > /tmp/backups/{{ QMGR_NAME }}.{{ FILE_DATE }}.mqsc
      become: yes
      become_user: mqm

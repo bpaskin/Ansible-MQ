@@ -3,6 +3,9 @@
    gather_facts: yes
    become: yes
 
+   vars:
+      FILE_DATE: "{{ lookup('pipe', 'date +%Y%m%d%H%M') }}"
+
    tasks:
 
    - name: Check if QMGR name is passed
