@@ -1,0 +1,19 @@
+ - name: Backup Configuration for MQ
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+
+   tasks:
+
+   - name: Check if QMGR name is passed
+     fail:
+        msg: No QMGR_NAME passed in the parameters
+     when: QMGR_NAME is not defined
+
+   - name: set MQ Directory
+     set_fact:
+        MQ_DIR: "{{ (ansible_system == 'AIX') | ternary ('/usr/mqm', '/opt/mqm') }}"
+
+   - include_tasks: ../tasks/backup_config_qmgr.yaml
+   - include_tasks: ../tasks/backup_data_qmgr.yaml
+

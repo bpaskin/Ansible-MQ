@@ -1,0 +1,21 @@
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     become: yes
+     become_user: mqm
+
+   - name: Create a directory if it does not exist
+     file:
+       path: /tmp/backups
+       state: directory
+       mode: 0755
+       owner: mqm
+       group: mqm
+
+   - include_tasks: stop_single_qmgr.yaml
+
+   - name: backup QMGR
+     archive:
+        path: /var/mqm/qmgrs/{{ QMGR_NAME }}
+        dest: /tmp/backups/{{ QMGR_NAME }}.{{ lookup('pipe', 'date +%Y%m%d%H%M') }}.tgz
+
+   - include_tasks: start_single_qmgr.yaml

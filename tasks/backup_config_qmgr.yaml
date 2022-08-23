@@ -1,0 +1,28 @@
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     become: yes
+     become_user: mqm
+
+   - name: Create a directory if it does not exist
+     file:
+       path: /tmp/backups
+       state: directory
+       mode: 0755
+       owner: mqm
+       group: mqm
+
+   - name: check QMGR state
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }} | grep -vi Running | awk '{print $1}' | sed 's/.*(\(.*\))/\1/'
+     become: yes
+     become_user: mqm
+     register: QMGRS
+
+   - name: Report error since QMGR is not started
+     fail:
+        msg: QMGR {{ QMGR_NAME }} is not started and the configuration cannot be backed up
+     when: QMGRS.stdout_lines | length > 0
+
+   - name: backup QMGR Configuration
+     shell: /{{ MQ_DIR }}/bin/dmpmqcfg -m {{ QMGR_NAME }} -a > /tmp/backups/{{ QMGR_NAME }}.{{ lookup('pipe', 'date +%Y%m%d%H%M') }}.mqsc
+     become: yes
+     become_user: mqm
