@@ -17,10 +17,14 @@
         shell: uncompress /tmp/{{ MQ_FILE_NAME }}
         when: '".Z" in MQ_FILE_NAME'
 
+      - name: Ungzip MQ
+        shell: gzip -d /tmp/{{ MQ_FILE_NAME }}
+        when: '".gz" in MQ_FILE_NAME'
+
 # Note: Cannot use unarchive command since this requires GNU tar
 # which may not be on the classpath
       - name: Unarchive MQ
-        shell: tar -xvf /tmp/{{ MQ_FILE_NAME.split('.Z') | first }} -C /tmp
+        shell: tar -xvf /tmp/{{ ( MQ_FILE_NAME | regex_replace('.Z|.gz', ':')).split(':')[0] }} -C /tmp
         when: '".tar" in MQ_FILE_NAME'
 
       - name: check if MQ may be installed
@@ -33,3 +37,8 @@
 
       - name: Install
         shell: installp -acgXYd /tmp/MQServer all
+      
+      - name: Delete temp directory
+        file:
+           state: absent
+           path: /tmp/MQServer
