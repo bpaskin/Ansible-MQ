@@ -13,8 +13,14 @@
         - /var/mqm/qmgrs/{{ QMGR_NAME }}
         - /var/mqm/log/{{ QMGR_NAME }}
 
+   - name: Check if the file is only a tar
+     stat:
+        path: /tmp/backups/{{ QMGR_RESTORE_NAME }}.tar
+     register: ONLY_TAR 
+
    - name: Unarchive MQ
      shell: gzip -d /tmp/backups/{{ QMGR_RESTORE_NAME }}.tgz
+     when: not ONLY_TAR.stat.exists
 
    - name: Unarchive MQ
      shell: tar -xvf /tmp/backups/{{ QMGR_RESTORE_NAME }}.tar -C /var/mqm/
