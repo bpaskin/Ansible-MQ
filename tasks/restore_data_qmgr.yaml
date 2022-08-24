@@ -15,15 +15,15 @@
 
    - name: Check if the file is only a tar
      stat:
-        path: /tmp/backups/{{ QMGR_RESTORE_NAME }}.tar
+        path: "{{ BACKUP_DIR }}/{{ QMGR_RESTORE_NAME }}.tar"
      register: ONLY_TAR 
 
    - name: Unarchive MQ
-     shell: gzip -d /tmp/backups/{{ QMGR_RESTORE_NAME }}.tgz
+     shell: gzip -d {{ BACKUP_DIR }}/{{ QMGR_RESTORE_NAME }}.tgz
      when: not ONLY_TAR.stat.exists
 
    - name: Unarchive MQ
-     shell: tar -xvf /tmp/backups/{{ QMGR_RESTORE_NAME }}.tar -C /var/mqm/
+     shell: tar -xvf {{ BACKUP_DIR }}/{{ QMGR_RESTORE_NAME }}.tar -C /var/mqm/
      become: yes
      become_user: mqm 
 

@@ -3,6 +3,9 @@
    gather_facts: yes
    become: yes
 
+   vars:
+      BACKUP_DIR: "/tmp/backups"
+
    tasks:
 
    - name: Check if QMGR name is passed

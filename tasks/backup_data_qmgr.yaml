@@ -5,7 +5,7 @@
 
    - name: Create a directory if it does not exist
      file:
-       path: /tmp/backups
+       path: "{{ BACKUP_DIR }}"
        state: directory
        mode: 0755
        owner: mqm
@@ -18,6 +18,6 @@
         path: 
            - /var/mqm/qmgrs/{{ QMGR_NAME }}
            - /var/mqm/log/{{ QMGR_NAME }}
-        dest: /tmp/backups/{{ QMGR_NAME }}.{{ FILE_DATE }}.tgz
+        dest: "{{ BACKUP_DIR }}/{{ QMGR_NAME }}.{{ FILE_DATE }}.tgz"
 
    - include_tasks: start_single_qmgr.yaml

@@ -15,7 +15,7 @@
      when: QMGRS.stdout_lines | length > 0
 
    - name: restore QMGR Configuration
-     shell: /{{ MQ_DIR }}/bin/runmqsc {{ QMGR_NAME }} < /tmp/backups/{{ QMGR_RESTORE_NAME }}.mqsc
+     shell: /{{ MQ_DIR }}/bin/runmqsc {{ QMGR_NAME }} < {{ BACKUP_DIR }}/{{ QMGR_RESTORE_NAME }}.mqsc
      become: yes
      become_user: mqm
 

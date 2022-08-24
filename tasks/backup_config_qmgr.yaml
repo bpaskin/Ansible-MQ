@@ -5,7 +5,7 @@
 
    - name: Create a directory if it does not exist
      file:
-       path: /tmp/backups
+       path: "{{ BACKUP_DIR }}"
        state: directory
        mode: 0755
        owner: mqm
@@ -23,6 +23,6 @@
      when: QMGRS.stdout_lines | length > 0
 
    - name: backup QMGR Configuration
-     shell: /{{ MQ_DIR }}/bin/dmpmqcfg -m {{ QMGR_NAME }} -a > /tmp/backups/{{ QMGR_NAME }}.{{ FILE_DATE }}.mqsc
+     shell: /{{ MQ_DIR }}/bin/dmpmqcfg -m {{ QMGR_NAME }} -a > {{ BACKUP_DIR }}/{{ QMGR_NAME }}.{{ FILE_DATE }}.mqsc
      become: yes
      become_user: mqm

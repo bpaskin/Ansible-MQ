@@ -5,6 +5,7 @@
 
    vars:
       FILE_DATE: "{{ lookup('pipe', 'date +%Y%m%d%H%M') }}"
+      BACKUP_DIR: "/tmp/backups"
 
    tasks:
 
