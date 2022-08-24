@@ -1,0 +1,22 @@
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     become: yes
+     become_user: mqm
+
+   - name: check QMGR state
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }} | grep -vi Running | awk '{print $1}' | sed 's/.*(\(.*\))/\1/'
+     become: yes
+     become_user: mqm
+     register: QMGRS
+
+   - name: Report error since QMGR is not started
+     fail:
+        msg: QMGR {{ QMGR_NAME }} is not started and the configuration cannot be restored
+     when: QMGRS.stdout_lines | length > 0
+
+   - name: restore QMGR Configuration
+     shell: /{{ MQ_DIR }}/bin/runmqsc {{ QMGR_NAME }} < /tmp/backups/{{ QMGR_RESTORE_NAME }}.mqsc
+     become: yes
+     become_user: mqm
+
+   

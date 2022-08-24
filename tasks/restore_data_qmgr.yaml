@@ -1,0 +1,21 @@
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     become: yes
+     become_user: mqm
+
+   - include_tasks: stop_single_qmgr.yaml
+
+   - name: Delete current files
+     file:
+        state: absent
+        path: /var/mqm/qmgrs/{{ QMGR_NAME }}
+
+   - name: Restore QMGR
+     unarchive:
+        copy: no
+        dest: /var/mqm/qmgrs/
+        src: /tmp/backups/{{ QMGR_RESTORE_NAME }}.tgz
+        owner: mqm
+        group: mqm
+
+   - include_tasks: start_single_qmgr.yaml
