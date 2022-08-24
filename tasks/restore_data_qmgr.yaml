@@ -8,14 +8,17 @@
    - name: Delete current files
      file:
         state: absent
-        path: /var/mqm/qmgrs/{{ QMGR_NAME }}
+        path: "{{ item }}"
+     with_items:
+        - /var/mqm/qmgrs/{{ QMGR_NAME }}
+        - /var/mqm/log/{{ QMGR_NAME }}
 
-   - name: Restore QMGR
-     unarchive:
-        copy: no
-        dest: /var/mqm/qmgrs/
-        src: /tmp/backups/{{ QMGR_RESTORE_NAME }}.tgz
-        owner: mqm
-        group: mqm
+   - name: Unarchive MQ
+     shell: gzip -d /tmp/backups/{{ QMGR_RESTORE_NAME }}.tgz
+
+   - name: Unarchive MQ
+     shell: tar -xvf /tmp/backups/{{ QMGR_RESTORE_NAME }}.tar -C /var/mqm/
+     become: yes
+     become_user: mqm 
 
    - include_tasks: start_single_qmgr.yaml
