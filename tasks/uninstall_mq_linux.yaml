@@ -1,0 +1,24 @@
+      - name: Check OS
+        fail:
+           msg: This playbook only runs on Linux, found {{ os_family }}
+        when: ansible_system != "Linux"
+
+      - name: check if MQ may be installed
+        stat:
+          path: /usr/mqm/bin/dspmqver
+        register: MQDSPVER
+
+      - include_tasks: stop_qmgrs.yaml
+        when: MQDSPVER.stat.exists == true
+
+      - name :  list installed MQ packages
+        become: yes
+        yum:
+          list: "MQSeries*"
+        register: RPMS
+
+      - name :  Uninstall MQ pakages using yum
+        become: yes
+        yum:
+           name:  "{{ RPMS.results | map(attribute='name') | list }}"
+           state: absent
