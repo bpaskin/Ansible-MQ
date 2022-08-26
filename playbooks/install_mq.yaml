@@ -7,3 +7,6 @@
 
       - include_tasks: ../tasks/install_mq_aix.yaml
         when: ansible_system == "AIX"
+
+      - include_tasks: ../tasks/install_mq_linux.yaml
+        when: ansible_system == "Linux"
