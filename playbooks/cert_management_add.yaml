@@ -1,0 +1,50 @@
+ - name: add cert
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+
+   vars:
+      KEYFILE_NAME: "key.kdb"
+
+   tasks:
+
+   - name: Check if QMGR name is passed
+     fail:
+        msg: No QMGR_NAME passed in the parameters
+     when: QMGR_NAME is not defined
+
+   - name: Check if the cert has been passed
+     fail:
+        msg: No CERT_FILE passed in the parameters
+     when: CERT_FILE is not defined
+
+   - name: set CERT_ALIAS
+     set_fact: CERT_ALIAS=ibmwebspheremq{{ QMGR_NAME | lower }}
+     when: CERT_ALIAS is not defined 
+ 
+   - name: set MQ Directory
+     set_fact:
+        MQ_DIR: "{{ (ansible_system == 'AIX') | ternary ('/usr/mqm', '/opt/mqm') }}"
+
+   - name: check if keystore all ready exists
+     stat:
+        path:  /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }}
+     register: KEYFILE
+
+   - name: fail if keyfile does not exist
+     fail:
+        msg: keyfile does not exist
+     when: not KEYFILE.stat.exists
+
+   - name: check if cert file exists
+     stat:
+        path: "{{ CERT_FILE }}"
+     register: CERTFILE
+
+   - name: fail if does not exist
+     fail:
+        msg: Certficate file does not exist
+     when: not CERTFILE.stat.exists
+
+   - include_tasks: ../tasks/cert_insert.yaml
+

@@ -1,0 +1,36 @@
+ - name: delete
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+
+   vars:
+      KEYFILE_NAME: "key.kdb"
+
+   tasks:
+
+   - name: Check if QMGR name is passed
+     fail:
+        msg: No QMGR_NAME passed in the parameters
+     when: QMGR_NAME is not defined
+
+   - name: check CERT_ALIAS
+     fail: 
+        msg: no CERT_ALIAS passed in the parameters
+     when: CERT_ALIAS is not defined 
+ 
+   - name: set MQ Directory
+     set_fact:
+        MQ_DIR: "{{ (ansible_system == 'AIX') | ternary ('/usr/mqm', '/opt/mqm') }}"
+
+   - name: check if keystore all ready exists
+     stat:
+        path:  /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }}
+     register: KEYFILE
+
+   - name: fail if keyfile does not exist
+     fail:
+        msg: keyfile does not exist
+     when: not KEYFILE.stat.exists
+
+   - include_tasks: ../tasks/cert_delete.yaml
+

@@ -1,0 +1,25 @@
+   - name: check if keystore all ready exists
+     stat:
+        path:  /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }}
+     register: KEYFILE
+
+   - name: fail if does not exist
+     fail:
+        msg: keyfile does not exist
+     when: not KEYFILE.stat.exists
+
+   - name: check if cert file exists
+     stat:
+        path: "{{ CERT_FILE }}"
+     register: CERTFILE
+
+   - name: fail if does not exist
+     fail:
+        msg: Certficate file does not exist
+     when: not CERTFILE.stat.exists
+
+   - name: add cert to keystore
+     shell: /{{ MQ_DIR }}/bin/runmqakm -cert -add -db /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }} -type kdb -stashed -file {{ CERT_FILE }} -label {{ CERT_ALIAS }}
+     become: yes
+     become_user: mqm
+

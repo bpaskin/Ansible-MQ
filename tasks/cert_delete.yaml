@@ -1,0 +1,14 @@
+   - name: check if keystore all ready exists
+     stat:
+        path:  /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }}
+     register: KEYFILE
+
+   - name: fail if does not exist
+     fail:
+        msg: keyfile does not exist
+     when: not KEYFILE.stat.exists
+
+   - name: delete cert alias
+     shell: /{{ MQ_DIR }}/bin/runmqakm -cert -delete -db /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }} -type kdb -stashed  -label {{ CERT_ALIAS }}
+     become: yes
+     become_user: mqm

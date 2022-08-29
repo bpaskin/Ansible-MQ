@@ -1,0 +1,19 @@
+   - name: check if keystore all ready exists
+     stat:
+        path:  /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }}
+     register: KEYFILE
+
+   - name: fail if does not exist
+     fail:
+        msg: keyfile does not exist
+     when: not KEYFILE.stat.exists
+
+   - name: list certs
+     shell: /{{ MQ_DIR }}/bin/runmqakm -cert -list -db /var/mqm/qmgrs/{{ QMGR_NAME }}/ssl/{{ KEYFILE_NAME }} -type kdb -stashed 
+     become: yes
+     become_user: mqm
+     register: CERTS
+
+   - name: print output
+     debug:
+        msg: "{{ CERTS.stdout_lines }}"
