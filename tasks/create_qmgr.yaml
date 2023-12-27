@@ -1,0 +1,18 @@
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     register: QMGR 
+     become: yes
+     become_user: mqm
+     ignore_errors: yes
+
+   - name: fail if the QMGR already exists
+     fail:
+        msg: QMGR {{ QMGR_NAME }} already exists on the system
+     when: QMGR.stdout_lines | length > 0
+
+   - name: create QMGR
+     shell: /{{ MQ_DIR }}/bin/crtmqm {{ QMGR_NAME }} 
+     become: yes
+     become_user: mqm
+
+   

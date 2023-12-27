@@ -70,3 +70,15 @@ ansible-playbook cert_management_list.yaml --extra-vars="QMGR_NAME=<qmgr name> [
 ```
 ansible-playbook cert_management_delete.yaml --extra-vars="QMGR_NAME=<qmgr name> CERT_ALIAS=<alias name> [KEYFILE_NAME=<keyfile name>]"
 ```
+
+
+#### Create new QMGR with configuration, and start
+```
+ansible-playbook create_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name> QMGR_PORT=<listener port>"
+```
+
+#### Delete a QMGR
+```
+ansible-playbook delete_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name>"
+```
+

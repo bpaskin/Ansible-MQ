@@ -1,0 +1,33 @@
+   - name: Check if QMGRPORT  name is passed
+     fail:
+        msg: No QMGR_PORT passed in the parameters
+     when: QMGR_PORT is not defined
+
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     register: QMGR 
+     become: yes
+     become_user: mqm
+
+   - name: check QMGR state
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }} | grep -vi Running | awk '{print $1}' | sed 's/.*(\(.*\))/\1/'
+     become: yes
+     become_user: mqm
+     register: QMGRS
+
+   - name: if not running, start
+     include_tasks: ../tasks/start_single_qmgr.yaml
+     when: QMGRS.stdout_lines | length != 1
+
+   - name: copy the template to the system
+     template:
+       src: ../templates/qmgr.mqsc.j2
+       dest: /tmp/{{ QMGR_NAME }}.mqsc
+       mode: 0755
+
+   - name: added the template to the qmgr
+     shell: /{{ MQ_DIR }}/bin/runmqsc {{ QMGR_NAME }} < /tmp/{{ QMGR_NAME }}.mqsc
+     become: yes
+     become_user: mqm
+
+   

@@ -1,0 +1,23 @@
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     register: QMGR 
+     become: yes
+     become_user: mqm
+
+   - name: check QMGR state
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }} | grep -i Ended | awk '{print $1}' | sed 's/.*(\(.*\))/\1/'
+     become: yes
+     become_user: mqm
+     register: QMGRS
+
+   - name: QMGR not stopped
+     fail:
+       msg: "QMGR {{ QMGR_NAME }} is not stopped"
+     when: QMGRS.stdout_lines | length != 1
+
+   - name: create QMGR
+     shell: /{{ MQ_DIR }}/bin/dltmqm {{ QMGR_NAME }} 
+     become: yes
+     become_user: mqm
+
+   
