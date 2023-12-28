@@ -15,7 +15,7 @@
        msg: "QMGR {{ QMGR_NAME }} is not stopped"
      when: QMGRS.stdout_lines | length != 1
 
-   - name: create QMGR
+   - name: Delete QMGR
      shell: /{{ MQ_DIR }}/bin/dltmqm {{ QMGR_NAME }} 
      become: yes
      become_user: mqm

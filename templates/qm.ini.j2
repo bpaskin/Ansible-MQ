@@ -1,0 +1,35 @@
+ExitPath:
+   ExitsDefaultPath=/var/mqm/exits
+   ExitsDefaultPath64=/var/mqm/exits64
+Log:
+   LogPrimaryFiles=30
+   LogSecondaryFiles=2
+   LogFilePages=40960
+   LogType=CIRCULAR
+   LogBufferPages=0
+   LogPath=/var/mqm/log/{{ QMGR_NAME }}/
+   LogWriteIntegrity=TripleWrite
+Service:
+   Name=AuthorizationService
+   EntryPoints=14
+ServiceComponent:
+   Service=AuthorizationService
+   Name=MQSeries.UNIX.auth.service
+   Module=amqzfu
+   ComponentDataSize=0
+SSL:
+   AllowTLSV13=Yes
+   MinimumRSAKeySize=1
+Channels:
+   ChlauthEarlyAdopt=Yes
+   ChlauthIgnoreUserCase=No
+TCP:
+   SndBuffSize=0
+   RcvBuffSize=0
+   RcvSndBuffSize=0
+   RcvRcvBuffSize=0
+   ClntSndBuffSize=0
+   ClntRcvBuffSize=0
+   SvrSndBuffSize=0
+   SvrRcvBuffSize=0
+   SecureCommsOnly=NO
