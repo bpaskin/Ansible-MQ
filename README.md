@@ -21,12 +21,12 @@ ansible-playbook uninstall_mq.yaml
 ansible-playbook check_config_mq.yaml
 ```
 
-### Backup QMGR (config and data)
+#### Backup QMGR (config and data)
 ```
 ansible-playbook backup_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name>"
 ```
 
-### Backup QMGR (config only)
+#### Backup QMGR (config only)
 ```
 ansible-playbook backup_config_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name>"
 ```
@@ -82,3 +82,7 @@ ansible-playbook create_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name> QMGR_PORT=
 ansible-playbook delete_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name>"
 ```
 
+#### Clear Queues
+```
+ansible-playbook clear_queues.yaml --extra-vars="QMGR_NAME=<qmgr name> QUEUE_NAMES=<queue name>[,<queue name>]"
+```

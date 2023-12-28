@@ -1,0 +1,24 @@
+   - name: check if QMGR exists
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }}
+     register: QMGR 
+     become: yes
+     become_user: mqm
+
+   - name: check QMGR state
+     shell: /{{ MQ_DIR }}/bin/dspmq -m {{ QMGR_NAME }} | grep -vi Running | awk '{print $1}' | sed 's/.*(\(.*\))/\1/'
+     become: yes
+     become_user: mqm
+     register: QMGRS
+
+   - name: fail if not started
+     fail:
+       msg: QMGR {{ QMGR_NAME }} is not started
+     when: QMGRS.stdout_lines | length != 0
+
+   - name: Clear Queues
+     shell: 'echo "CLEAR QL({{ item }})" | /{{ MQ_DIR }}/bin/runmqsc {{ QMGR_NAME }}'
+     become: yes
+     become_user: mqm
+     with_items: "{{ QUEUE_NAMES.split(',') }}"
+
+   
