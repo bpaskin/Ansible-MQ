@@ -16,9 +16,22 @@
         yum:
           list: "MQSeries*"
         register: RPMS
+        when: ansible_distribution == 'RedHat'
+
+      - name :  list installed MQ packages
+        become: yes
+        shell: "dpkg -l | grep ibmmq | awk '{print $2}'"
+        register: RPMS
+        when: ansible_distribution == 'Ubuntu'
 
       - name :  Uninstall MQ pakages using yum
         become: yes
         yum:
            name:  "{{ RPMS.results | map(attribute='name') | list }}"
            state: absent
+        when: ansible_distribution == 'RedHat'
+
+      - name :  Uninstall MQ pakages using dpkg
+        become: yes
+        shell: "dpkg -P {{ RPMS.stdout_lines | join(' ') }}"
+        when: ansible_distribution == 'Ubuntu'
