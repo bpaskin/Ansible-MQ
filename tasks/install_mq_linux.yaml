@@ -30,7 +30,7 @@
       - name: get a list of RPM files
         find: 
            file_type: file
-           patterns: "*rpm"
+           patterns: "*rpm,*deb"
            paths: /tmp/MQServer
         register: RPMS
 
@@ -39,7 +39,15 @@
         yum:
            name:  "{{ RPMS.files | map(attribute='path') | list }}"
            state: present
-           disable_gpg_check: True 
+           disable_gpg_check: True
+           use_backend: yum4
+        when: ansible_distribution == 'RedHat'
+
+      - name : MQ_default_install - Install MQ pakages using apt
+        become: yes
+        become_method: sudo
+        shell: "dpkg --force-depends -i {{ RPMS.files | map(attribute='path') | join(' ') }}"
+        when: ansible_distribution == 'Ubuntu'
 
       - name: accept MQ License
         shell: /opt/mqm/bin/mqlicense -accept 
