@@ -1,0 +1,12 @@
+ - name: start all QMGRs
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+
+   tasks:
+
+   - name: set MQ Directory
+     set_fact:
+        MQ_DIR: "{{ (ansible_system == 'AIX') | ternary ('/usr/mqm', '/opt/mqm') }}"
+
+   - include_tasks: ../tasks/start_qmgrs.yaml

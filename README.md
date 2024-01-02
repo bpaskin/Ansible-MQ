@@ -86,3 +86,23 @@ ansible-playbook delete_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name>"
 ```
 ansible-playbook clear_queues.yaml --extra-vars="QMGR_NAME=<qmgr name> QUEUE_NAMES=<queue name>[,<queue name>]"
 ```
+
+#### Start QMGR
+```
+ansible-playbook start_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name>"
+```
+
+#### Start all QMGRs
+```
+ansible-playbook start_qmgrs.yaml 
+```
+
+#### Stop QMGR
+```
+ansible-playbook stop_qmgr.yaml --extra-vars="QMGR_NAME=<qmgr name>"
+```
+
+#### Stop all QMGR
+```
+ansible-playbook stop_qmgrs.yaml 
+```
