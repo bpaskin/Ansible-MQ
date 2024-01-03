@@ -3,20 +3,26 @@
            msg: This playbook only runs on Linux, found {{ os_family }}
         when: ansible_system != "Linux"
 
+      - name: Copy file to remote system
+        copy:
+          src: "{{ MQ_FILE_NAME }}"
+          dest: /tmp/{{ MQ_FILE_NAME | basename }}
+
       - name: Check if file exists
         stat:
-          path: /tmp/{{ MQ_FILE_NAME }}
+          path: /tmp/{{ MQ_FILE_NAME | basename }}
         register: MQFile
 
       - name: fail when MQ Files does not exist
         fail:
-          msg: Missing MQ Archive - {{ MQ_FILE_NAME }}
+          msg: Missing MQ Archive - {{ MQ_FILE_NAME | basename }}
         when: MQFile.stat.exists == false
 
       - name: Uncompress MQ
         unarchive:
-           src: /tmp/{{ MQ_FILE_NAME }}
+           src: /tmp/{{ MQ_FILE_NAME | basename }}
            dest: /tmp/
+           remote_src: true
         when: '"tar" in MQ_FILE_NAME or "gz" in MQ_FILE_NAME'
 
       - name: check if MQ may be installed
@@ -46,7 +52,7 @@
       - name : MQ_default_install - Install MQ pakages using apt
         become: yes
         become_method: sudo
-        shell: "dpkg --force-depends -i {{ RPMS.files | map(attribute='path') | join(' ') }}"
+        shell: "apt install -y /tmp/MQServer/*.deb"
         when: ansible_distribution == 'Ubuntu'
 
       - name: accept MQ License
