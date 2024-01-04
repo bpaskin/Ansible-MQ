@@ -36,17 +36,5 @@
         msg: keyfile already exists
      when: KEYFILE.stat.exists
 
-   - name: check if cert file exists
-     stat:
-        path: "{{ CERT_FILE }}"
-     register: CERTFILE
-
-   - name: fail if does not exist
-     fail:
-        msg: Certficate file does not exist
-     when: not CERTFILE.stat.exists
-
    - include_tasks: ../tasks/cert_keystore_create.yaml
-
-   - include_tasks: ../tasks/cert_insert.yaml
 
