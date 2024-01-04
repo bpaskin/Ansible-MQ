@@ -1,4 +1,4 @@
- - name: Create keystore and first cert
+ - name: Create keystore 
    hosts: localhost
    gather_facts: yes
    become: yes
@@ -13,15 +13,6 @@
         msg: No QMGR_NAME passed in the parameters
      when: QMGR_NAME is not defined
 
-   - name: Check if the cert has been passed
-     fail:
-        msg: No CERT_FILE passed in the parameters
-     when: CERT_FILE is not defined
-
-   - name: set CERT_ALIAS
-     set_fact: CERT_ALIAS=ibmwebspheremq{{ QMGR_NAME | lower }}
-     when: CERT_ALIAS is not defined 
- 
    - name: set MQ Directory
      set_fact:
         MQ_DIR: "{{ (ansible_system == 'AIX') | ternary ('/usr/mqm', '/opt/mqm') }}"
